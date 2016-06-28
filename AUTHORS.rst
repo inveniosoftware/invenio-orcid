@@ -27,4 +27,4 @@ Authors
 
 ORCID integration for Invenio.
 
-- CERN <info@invenio-software.org>
+- CERN <info@inveniosoftware.org>
