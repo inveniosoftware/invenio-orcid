@@ -26,12 +26,15 @@
 
 from __future__ import absolute_import, print_function
 
-from flask import Blueprint, render_template
+from flask import Blueprint, jsonify, render_template
 from flask_babelex import gettext as _
+
+from invenio_orcid.api import search as orcid_search
 
 blueprint = Blueprint(
     'invenio_orcid',
     __name__,
+    url_prefix='/orcid',
     template_folder='templates',
     static_folder='static',
 )
@@ -43,3 +46,27 @@ def index():
     return render_template(
         'invenio_orcid/index.html',
         module_name=_('Invenio-ORCID'))
+
+
+@blueprint.route('/search/name/<string:name>')
+def search_string(name):
+    """
+    Search the ORCID endpoint for people with a given name.
+
+    :param name: String representing the name to be searched on
+    :return: JSON representing the search results
+    """
+    result = orcid_search(type='text', term=name)
+    return jsonify(result)
+
+
+@blueprint.route('/search/orcid/<string:orcid>')
+def search_orcid(orcid):
+    """
+    Search the ORCID endpoint for people with a given ORCID iD.
+
+    :param name: String representing the ORCID iD to be searched on
+    :return: JSON representing the search results
+    """
+    result = orcid_search(type='orcid', term=orcid)
+    return jsonify(result)

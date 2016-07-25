@@ -27,6 +27,8 @@
 
 from __future__ import absolute_import, print_function
 
+import json
+
 from flask import Flask
 from flask_babelex import Babel
 
@@ -62,3 +64,28 @@ def test_view(app):
         res = client.get("/")
         assert res.status_code == 200
         assert 'Welcome to Invenio-ORCID' in str(res.data)
+
+
+def test_search(app):
+    Babel(app)
+    InvenioORCID(app)
+    app.register_blueprint(blueprint)
+
+    with app.test_client() as client:
+        res = client.get("/search/name/eamonn")
+
+        assert res.status_code == 200
+
+        _result_json = json.loads(res.data)
+        assert('orcid-search-results' in _result_json)
+        assert(_result_json['orcid-search-results']['num-found'] > 0)
+
+    with app.test_client() as client:
+        res = client.get("/search/orcid/0000-0002-7277-7834")
+
+        assert res.status_code == 200
+        _result_json = json.loads(res.data)
+        assert('orcid-search-results' in _result_json)
+        assert(_result_json['orcid-search-results']['num-found'] == 1)
+
+

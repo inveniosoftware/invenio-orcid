@@ -26,6 +26,9 @@
 
 from __future__ import absolute_import, print_function
 
+from invenio_orcid import config
+from invenio_orcid.views import blueprint
+
 
 class InvenioORCID(object):
     """Invenio-ORCID extension."""
@@ -38,6 +41,7 @@ class InvenioORCID(object):
     def init_app(self, app):
         """Flask application initialization."""
         self.init_config(app)
+        app.register_blueprint(blueprint)
         app.extensions['invenio-orcid'] = self
 
     def init_config(self, app):
@@ -46,3 +50,8 @@ class InvenioORCID(object):
             'ORCID_BASE_TEMPLATE',
             app.config.get('BASE_TEMPLATE',
                            'invenio_orcid/base.html'))
+
+
+        for k in dir(config):
+            if k.startswith('ORCID_'):
+                app.config.setdefault(k, getattr(config, k))
