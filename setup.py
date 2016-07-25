@@ -59,9 +59,7 @@ setup_requires = [
 ]
 
 install_requires = [
-    'Flask-BabelEx>=0.9.2',
-    'invenio-db>=1.0.0a9',
-    'invenio-oauthclient>=1.0.0a4',
+    'Flask-BabelEx>=0.9.2'
 ]
 
 packages = find_packages()
@@ -94,19 +92,9 @@ setup(
         'invenio_i18n.translations': [
             'messages = invenio_orcid',
         ],
-        # TODO: Edit these entry points to fit your needs.
-        # 'invenio_access.actions': [],
-        # 'invenio_admin.actions': [],
-        # 'invenio_assets.bundles': [],
-        # 'invenio_base.api_apps': [],
-        # 'invenio_base.api_blueprints': [],
         'invenio_base.blueprints': [
             'invenio_orcid = invenio_orcid.view:blueprint',
-        ],
-        # 'invenio_celery.tasks': [],
-        # 'invenio_db.models': [],
-        # 'invenio_pidstore.minters': [],
-        # 'invenio_records.jsonresolver': [],
+        ]
     },
     extras_require=extras_require,
     install_requires=install_requires,
