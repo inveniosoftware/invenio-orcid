@@ -25,9 +25,13 @@
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 
 
-def get_authors_credentials(orcid):
-    """Return ORCID access token for a specific author (if available)."""
+def get_authors_credentials(author_identifier, method='orcid'):
+    """Return the access token for a specific author (if available).
+
+    :param author_identifier: The id of the author (e.g. the orcid-id).
+    :param method: The service associated with the author_identifier.
+    """
     raw_user = UserIdentity.query.filter_by(
-        id=orcid, method='orcid').first()
+        id=author_identifier, method=method).first()
     user = RemoteAccount.query.filter_by(user_id=raw_user.id_user).first()
     return user.tokens[0].access_token
