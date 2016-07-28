@@ -27,7 +27,8 @@
 from __future__ import absolute_import, print_function
 
 import orcid
-from werkzeug.utils import cached_property
+import six
+from werkzeug.utils import cached_property, import_string
 
 from . import config
 
@@ -58,6 +59,15 @@ class _ORCIDState(object):
         return orcid.MemberAPI(
             orcid_consumer_secret, orcid_consumer_key, sandbox=sandbox
         )
+
+    @cached_property
+    def author_search(self):
+        """Return a cache instance."""
+        author_search = self.app.config.get('ORCID_AUTHORS_SEARCH_CLASS')
+
+        return import_string(author_search) \
+            if isinstance(author_search, six.string_types) \
+            else author_search
 
 
 class InvenioORCID(object):

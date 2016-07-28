@@ -27,8 +27,8 @@ from celery.utils.log import get_task_logger
 from flask import current_app
 from invenio_db import db
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
+from invenio_pidstore import current_pidstore
 from invenio_pidstore.resolver import Resolver
-from invenio_search import current_search_client
 from invenio_search.utils import schema_to_index
 from requests import RequestException
 from werkzeug.utils import import_string
@@ -40,16 +40,20 @@ from .utils import get_authors_credentials
 logger = get_task_logger(__name__)
 
 
-def prepare_authors_data_for_pushing_to_orcid(json):
+def prepare_authors_data_for_pushing_to_orcid(data):
     """Extract the authors with valid ORCID credentials.
 
     It uses the list of authors from a given record in JSON format.
     """
-    resolver = Resolver(pid_type='literature',
+    pid_type = current_app.config['ORCID_RECORDS_PID_TYPE']
+    resolver = Resolver(pid_type=pid_type,
                         object_type='rec', getter=lambda x: x)
-    record_id = resolver.resolve(json.get('control_number'))[
+    fetcher_name = current_app.config['ORCID_RECORDS_PID_FETCHER']
+    pid = current_pidstore.fetchers[fetcher_name](None, data)
+    record_identifier = pid.pid_value
+    record_id = resolver.resolve(data.get(record_identifier))[
         0].object_uuid
-    authors = get_orcid_valid_authors(json)
+    authors = get_orcid_valid_authors(data)
     token = None
     author_orcid = ''
     authors_with_orcid_credentials = []
@@ -76,9 +80,13 @@ def prepare_authors_data_for_pushing_to_orcid(json):
 def delete_from_orcid(sender, api=None):
     """Delete a record from orcid."""
     api = api or current_orcid.member
-    resolver = Resolver(pid_type='literature',
+    pid_type = current_app.config['ORCID_RECORDS_PID_TYPE']
+    resolver = Resolver(pid_type=pid_type,
                         object_type='rec', getter=lambda x: x)
-    record_id = resolver.resolve(sender.get('control_number'))[
+    fetcher_name = current_app.config['ORCID_RECORDS_PID_FETCHER']
+    pid = current_pidstore.fetchers[fetcher_name](None, sender)
+    record_identifier = pid.pid_value
+    record_id = resolver.resolve(sender.get(record_identifier))[
         0].object_uuid
     records = ORCIDRecords.query.filter_by(record_id=record_id).all()
     for record in records:
@@ -95,14 +103,19 @@ def delete_from_orcid(sender, api=None):
 def doc_type_should_be_sent_to_orcid(record):
     """Return ``True`` is a document type should be sent to ORCID."""
     index, doc_type = schema_to_index(record['$schema'])
-    return doc_type == 'hep'
+    main_doc_type = current_app.config['ORCID_RECORDS_DOC_TYPE']
+    return doc_type == main_doc_type
 
 
 @shared_task(ignore_result=True)
 def send_to_orcid(sender, api=None):
     """Send records to orcid."""
     if doc_type_should_be_sent_to_orcid(sender):
-        logger.info("Sending " + sender.get('control_number') + " to orcid.")
+        fetcher_name = current_app.config['ORCID_RECORDS_PID_FETCHER']
+        pid = current_pidstore.fetchers[fetcher_name](None, sender)
+        record_identifier = pid.pid_value
+        current_app.logger.info('Sending "{0}" to orcid.').format(
+            sender.get(record_identifier))
         try:
             api = api or current_orcid.member
             convert_to_orcid = import_string(
@@ -128,16 +141,20 @@ def send_to_orcid(sender, api=None):
                     else:
                         api.update_record(author_orcid, token,
                                           'work', orcid_json, str(put_code))
-                    logger.info("Succersfully sent " +
-                                sender.get('control_number') + " to orcid.")
+                    current_app.logger.info(
+                        'Succersfully sent "{0}" to orcid.').format(
+                            sender.get(record_identifier))
                 except RequestException as e:
-                    print(e.response.text, sender['control_number'])
-                    logger.info("Failed to push " +
-                                sender.get('control_number') + " to orcid.")
+                    current_app.logger.info(
+                        e.response.text, sender[record_identifier])
+                    current_app.logger.info(
+                        'Failed to push "{0}" to orcid.').format(
+                            sender.get(record_identifier))
                     continue
         except (KeyError, AttributeError, TypeError) as e:
-            logger.info("Failed to convert " +
-                        sender.get('control_number') + " to orcid.")
+            current_app.logger.info.info(
+                'Failed to convert "{0}" to orcid.').format(
+                    sender.get(record_identifier))
 
 
 def get_author_collection_records_from_valid_authors(authors_refs):
@@ -155,12 +172,8 @@ def get_author_collection_records_from_valid_authors(authors_refs):
             }
         }
     }
-    authors = current_search_client.search(
-        index='records-authors',
-        doc_type='authors',
-        body=es_query
-    )['hits']['hits']
-    return authors
+
+    return current_orcid.author_search.execute(es_query).hits.hits
 
 
 def get_orcid_valid_authors(record):

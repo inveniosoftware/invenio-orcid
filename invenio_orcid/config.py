@@ -32,15 +32,21 @@ ORCID_RECORD_SERIALIZER = {
 
 ORCID_JSON_CONVERTER_MODULE = 'invenio_orcid.utils:convert_to_orcid'
 
-ORCID_WORK_TYPES = {
-    'book': 'BOOK',
-    'conferencepaper': 'CONFERENCE_PAPER',
-    'proceedings': 'BOOK',
-    'preprint': 'WORKING_PAPER',
-    'note': 'WORKING_PAPER',
-    'published': 'JOURNAL_ARTICLE',
-    'thesis': 'DISSERTATION',
-    'lectures': 'LECTURE_SPEECH',
-    'bookchapter': 'BOOK_CHAPTER',
-    'report': 'REPORT',
-}
+ORCID_AUTHORS_SEARCH_CLASS = 'invenio_search:RecordsSearch'
+
+ORCID_RECORDS_PID_TYPE = 'records'
+ORCID_RECORDS_DOC_TYPE = 'records'
+ORCID_RECORDS_PID_FETCHER = 'recid_fetcher'
+
+ORCID_WORK_TYPES = {}
+"""Mapping to ORCID work types.
+
+Example:
+
+.. code-block:: python
+
+    ORCID_WORK_TYPES = {
+        'conferencepaper': 'CONFERENCE_PAPER',
+        'proceedings': 'BOOK',
+    }
+"""
