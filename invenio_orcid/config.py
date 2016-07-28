@@ -26,6 +26,12 @@ from __future__ import absolute_import
 
 ORCID_SYNCHRONIZATION_ENABLED = True
 
+ORCID_RECORD_SERIALIZER = {
+    'application/x-orcid': ('.serializers:orcid_response'),
+}
+
+ORCID_JSON_CONVERTER_MODULE = 'invenio_orcid.utils:convert_to_orcid'
+
 ORCID_WORK_TYPES = {
     'book': 'BOOK',
     'conferencepaper': 'CONFERENCE_PAPER',

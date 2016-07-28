@@ -35,3 +35,27 @@ def get_authors_credentials(author_identifier, method='orcid'):
         id=author_identifier, method=method).first()
     user = RemoteAccount.query.filter_by(user_id=raw_user.id_user).first()
     return user.tokens[0].access_token
+
+
+def convert_to_orcid(record):
+    """Dummy converter, assuming that the record is a dojson serialization of MARC.
+
+    To create yours see https://github.com/ORCID/python-orcid
+    and http://members.orcid.org/api.
+    """
+    return {
+        "title": {
+            "title": record[0]['title_statement']['title']
+        },
+        "type": "JOURNAL_ARTICLE",
+        "external-ids": {
+            "external-id": [
+                {
+                    "external-id-value": record[0]['other_standard_identifier']
+                    ['standard_number_or_code'],
+                    "external-id-type": "doi",
+                    "external-id-relationship": "SELF"
+                }
+            ]
+        }
+    }

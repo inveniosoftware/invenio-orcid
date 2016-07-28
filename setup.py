@@ -103,7 +103,7 @@ setup(
         # 'invenio_base.api_apps': [],
         # 'invenio_base.api_blueprints': [],
         'invenio_base.blueprints': [
-            'invenio_orcid = invenio_orcid.view:blueprint',
+            'invenio_orcid = invenio_orcid.views:blueprint',
         ],
         # 'invenio_celery.tasks': [],
         # 'invenio_db.models': [],

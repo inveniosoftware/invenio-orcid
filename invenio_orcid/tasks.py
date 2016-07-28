@@ -31,10 +31,11 @@ from invenio_pidstore.resolver import Resolver
 from invenio_search import current_search_client
 from invenio_search.utils import schema_to_index
 from requests import RequestException
+from werkzeug.utils import import_string
 
 from .models import ORCIDRecords
 from .proxies import current_orcid
-from .utils import convert_to_orcid, get_authors_credentials
+from .utils import get_authors_credentials
 
 logger = get_task_logger(__name__)
 
@@ -79,7 +80,7 @@ def delete_from_orcid(sender, api=None):
                         object_type='rec', getter=lambda x: x)
     record_id = resolver.resolve(sender.get('control_number'))[
         0].object_uuid
-    records = InspireOrcidRecords.query.filter_by(record_id=record_id).all()
+    records = ORCIDRecords.query.filter_by(record_id=record_id).all()
     for record in records:
         raw_user = UserIdentity.query.filter_by(
             id=record.orcid, method='orcid').first()
@@ -104,6 +105,8 @@ def send_to_orcid(sender, api=None):
         logger.info("Sending " + sender.get('control_number') + " to orcid.")
         try:
             api = api or current_orcid.member
+            convert_to_orcid = import_string(
+                current_app.config['ORCID_JSON_CONVERTER_MODULE'])
             orcid_json = convert_to_orcid(sender)
             authors = prepare_authors_data_for_pushing_to_orcid(sender)
             for author in authors:
@@ -115,7 +118,7 @@ def send_to_orcid(sender, api=None):
                     if not put_code:
                         put_code = api.add_record(  # try-continue
                             author_orcid, token, 'work', orcid_json)
-                        orcid_log_record = InspireOrcidRecords(
+                        orcid_log_record = ORCIDRecords(
                             orcid=author_orcid,
                             record_id=record_id,
                             put_code=put_code)
