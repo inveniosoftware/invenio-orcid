@@ -137,8 +137,8 @@ html_theme_options = {
     'github_banner': True,
     'show_powered_by': False,
     'extra_nav_links': {
-        'invenio-orcid@GitHub': 'http://github.com/inveniosoftware/invenio-orcid',
-        'invenio-orcid@PyPI': 'http://pypi.python.org/pypi/invenio-orcid/',
+        'invenio-orcid@GitHub': 'https://github.com/inveniosoftware/invenio-orcid',
+        'invenio-orcid@PyPI': 'https://pypi.python.org/pypi/invenio-orcid/',
     }
 }
 
@@ -329,3 +329,6 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+# Autodoc configuraton.
+autoclass_content = 'both'
