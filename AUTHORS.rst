@@ -27,4 +27,7 @@ Authors
 
 ORCID integration for Invenio.
 
-- CERN <info@inveniosoftware.org>
+- Alizee Pace <alizee.pace@gmail.com>
+- Jiri Kuncar <jiri.kuncar@cern.ch>
+- Panos Paparrigopoulos <panos.paparrigopoulos@cern.ch>
+- Tibor Simko <tibor.simko@cern.ch>
