@@ -46,4 +46,4 @@ ORCID integration for Invenio.
 *This is an experimental developer preview release.*
 
 * Free software: GPLv2 license
-* Documentation: https://pythonhosted.org/invenio-orcid/
+* Documentation: https://invenio-orcid.readthedocs.io/

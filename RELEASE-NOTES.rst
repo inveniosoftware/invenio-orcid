@@ -24,7 +24,7 @@ Installation
 Documentation
 -------------
 
-   http://pythonhosted.org/invenio-orcid/
+   http://invenio-orcid.readthedocs.io/
 
 Happy hacking and thanks for flying Invenio-ORCID.
 
