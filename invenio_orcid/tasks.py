@@ -91,6 +91,26 @@ def delete_from_orcid(sender, api=None):
         db.session.commit()
 
 
+@shared_task(ignore_result=True)
+def delete_from_orcid_of_single_author(sender, authors_orcid, api=None):
+    """Delete a record from orcid."""
+    api = api or current_orcid.member
+    resolver = Resolver(pid_type='literature',
+                        object_type='rec', getter=lambda x: x)
+    record_id = resolver.resolve(sender.get('control_number'))[
+        0].object_uuid
+    record = InspireOrcidRecords.query.filter_by(
+        record_id=record_id, orcid=authors_orcid).all()
+    raw_user = UserIdentity.query.filter_by(
+        id=record.orcid, method='orcid').first()
+    user = RemoteAccount.query.filter_by(user_id=raw_user.id_user).first()
+    token = user.tokens[0].access_token
+    api.remove_record(record.orcid, token, 'work', record.put_code)
+    with db.session.begin_nested():
+        db.session.delete(record)
+    db.session.commit()
+
+
 def doc_type_should_be_sent_to_orcid(record):
     """Return ``True`` is a document type should be sent to ORCID."""
     index, doc_type = schema_to_index(record['$schema'])
