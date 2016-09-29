@@ -26,21 +26,20 @@
 
 from __future__ import absolute_import, print_function
 
-import json
-
-from flask import jsonify
+from flask import current_app, jsonify
 
 from invenio_orcid.utils import convert_to_orcid
 
-from werkzeug import import_string
+from werkzeug import cached_property, import_string
 
 
 class ORCIDSerializer(object):
     """Orcid serializer for records."""
 
-    def __init__(self):
-        """Initialize state."""
-        self.convert_to_orcid = import_string(
+    @cached_property
+    def convert_to_orcid(self):
+        """Import the orcid converter."""
+        return import_string(
             current_app.config['ORCID_JSON_CONVERTER_MODULE'])
 
     def serialize(self, pid, record, links_factory=None):

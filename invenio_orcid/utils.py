@@ -22,19 +22,35 @@
 
 """Implement helper functions."""
 
+from flask import current_app
+
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
 
+from werkzeug.utils import import_string
 
-def get_authors_credentials(author_identifier, method='orcid'):
+
+def get_authors_credentials(author, method='orcid'):
     """Return the access token for a specific author (if available).
 
-    :param author_identifier: The id of the author (e.g. the orcid-id).
+    :param author: An author record.
     :param method: The service associated with the author_identifier.
     """
+    get_identifier = import_string(
+        current_app.config['ORCID_ID_FETCHER'])
+    author_identifier = get_identifier(author)
     raw_user = UserIdentity.query.filter_by(
         id=author_identifier, method=method).first()
     user = RemoteAccount.query.filter_by(user_id=raw_user.id_user).first()
-    return user.tokens[0].access_token
+
+    return user.remote_tokens[0].access_token, author_identifier
+
+
+def get_orcid_id(author):
+    """Return the ORCID iD of a given author record.
+
+    :param author: An author record.
+    """
+    return author['orcid']
 
 
 def convert_to_orcid(record):

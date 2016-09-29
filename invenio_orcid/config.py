@@ -31,6 +31,7 @@ ORCID_RECORD_SERIALIZER = {
 }
 
 ORCID_JSON_CONVERTER_MODULE = 'invenio_orcid.utils:convert_to_orcid'
+ORCID_ID_FETCHER = 'invenio_orcid.utils:get_orcid_id'
 
 ORCID_AUTHORS_SEARCH_CLASS = 'invenio_search:RecordsSearch'
 

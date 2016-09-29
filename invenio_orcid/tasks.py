@@ -51,15 +51,14 @@ def prepare_authors_data_for_pushing_to_orcid(data):
     fetcher_name = current_app.config['ORCID_RECORDS_PID_FETCHER']
     pid = current_pidstore.fetchers[fetcher_name](None, data)
     record_identifier = pid.pid_value
-    record_id = resolver.resolve(data.get(record_identifier))[
-        0].object_uuid
+    record_id = resolver.resolve(record_identifier)[0].object_uuid
     authors = get_orcid_valid_authors(data)
     token = None
     author_orcid = ''
     authors_with_orcid_credentials = []
     for author in authors:
         try:
-            token, author_orcid = get_authors_credentials(author['_source'])
+            token, author_orcid = get_authors_credentials(author)
         except AttributeError:
             continue
         try:
@@ -86,14 +85,13 @@ def delete_from_orcid(sender, api=None):
     fetcher_name = current_app.config['ORCID_RECORDS_PID_FETCHER']
     pid = current_pidstore.fetchers[fetcher_name](None, sender)
     record_identifier = pid.pid_value
-    record_id = resolver.resolve(sender.get(record_identifier))[
-        0].object_uuid
+    record_id = resolver.resolve(record_identifier)[0].object_uuid
     records = ORCIDRecords.query.filter_by(record_id=record_id).all()
     for record in records:
         raw_user = UserIdentity.query.filter_by(
             id=record.orcid, method='orcid').first()
         user = RemoteAccount.query.filter_by(user_id=raw_user.id_user).first()
-        token = user.tokens[0].access_token
+        token = user.remote_tokens[0].access_token
         api.remove_record(record.orcid, token, 'work', record.put_code)
         with db.session.begin_nested():
             db.session.delete(record)
@@ -114,7 +112,8 @@ def send_to_orcid(sender, api=None):
         fetcher_name = current_app.config['ORCID_RECORDS_PID_FETCHER']
         pid = current_pidstore.fetchers[fetcher_name](None, sender)
         record_identifier = pid.pid_value
-        current_app.logger.info('Sending "{0}" to orcid.'.format(record_identifier))
+        current_app.logger.info('Sending "{0}" to orcid.'.format(
+            record_identifier))
         try:
             api = api or current_orcid.member
             convert_to_orcid = import_string(
@@ -158,27 +157,19 @@ def send_to_orcid(sender, api=None):
 
 def get_author_collection_records_from_valid_authors(authors_refs):
     """Query elasticsearch for the author of the given authors references."""
-    es_query = {
-        "filter": {
-            "bool": {
-                "must": [
-                    {"terms": {
-                        "self.$ref": authors_refs
-                    }}, {"match": {
-                        "ids.type": "ORCID"
-                    }}
-                ]
-            }
-        }
+    search_args = {
+        'self__$ref': authors_refs
     }
 
-    return current_orcid.author_search.execute(es_query).hits.hits
+    query = current_orcid.author_search().query('match', ids__type='ORCID') \
+                                         .query('terms', **search_args)
+    return query.execute().hits
 
 
 def get_orcid_valid_authors(record):
     """Return all the valid author-records from a record.
 
-    A valid author-rerord is one that contains an orcid id.
+    A valid author-rerord is one that contains an ORCID iD.
     """
     authors_refs = []
     for author in record['authors']:
