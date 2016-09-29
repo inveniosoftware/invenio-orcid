@@ -114,8 +114,7 @@ def send_to_orcid(sender, api=None):
         fetcher_name = current_app.config['ORCID_RECORDS_PID_FETCHER']
         pid = current_pidstore.fetchers[fetcher_name](None, sender)
         record_identifier = pid.pid_value
-        current_app.logger.info('Sending "{0}" to orcid.').format(
-            sender.get(record_identifier))
+        current_app.logger.info('Sending "{0}" to orcid.'.format(record_identifier))
         try:
             api = api or current_orcid.member
             convert_to_orcid = import_string(
@@ -142,19 +141,19 @@ def send_to_orcid(sender, api=None):
                         api.update_record(author_orcid, token,
                                           'work', orcid_json, str(put_code))
                     current_app.logger.info(
-                        'Succersfully sent "{0}" to orcid.').format(
-                            sender.get(record_identifier))
+                        'Succersfully sent "{0}" to orcid.'.format(
+                            sender.get(record_identifier)))
                 except RequestException as e:
                     current_app.logger.info(
                         e.response.text, sender[record_identifier])
                     current_app.logger.info(
-                        'Failed to push "{0}" to orcid.').format(
-                            sender.get(record_identifier))
+                        'Failed to push "{0}" to orcid.'.format(
+                            sender.get(record_identifier)))
                     continue
         except (KeyError, AttributeError, TypeError) as e:
-            current_app.logger.info.info(
-                'Failed to convert "{0}" to orcid.').format(
-                    sender.get(record_identifier))
+            current_app.logger.info(
+                'Failed to convert "{0}" to orcid.'.format(
+                    sender.get(record_identifier)))
 
 
 def get_author_collection_records_from_valid_authors(authors_refs):
