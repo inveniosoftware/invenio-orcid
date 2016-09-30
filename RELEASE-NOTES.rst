@@ -2,7 +2,7 @@
  Invenio-ORCID v0.1.0
 ======================
 
-Invenio-ORCID v0.1.0 was released on TBD, 2016.
+Invenio-ORCID v0.1.0 was released on September 30, 2016.
 
 About
 -----
@@ -19,7 +19,7 @@ What's new
 Installation
 ------------
 
-   $ pip install invenio-orcid==0.1.0
+   $ pip install invenio-orcid==1.0.0a1
 
 Documentation
 -------------
