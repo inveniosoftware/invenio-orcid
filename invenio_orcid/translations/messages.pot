@@ -1,0 +1,29 @@
+# Translations template for invenio-orcid.
+# Copyright (C) 2016 CERN
+# This file is distributed under the same license as the invenio-orcid
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: invenio-orcid 1.0.0a2.dev20160930\n"
+"Report-Msgid-Bugs-To: info@inveniosoftware.org\n"
+"POT-Creation-Date: 2016-09-30 13:58+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: invenio_orcid/views.py:45
+msgid "Invenio-ORCID"
+msgstr ""
+
+#: invenio_orcid/templates/invenio_orcid/index.html:5
+#, python-format
+msgid "Welcome to %(module_name)s"
+msgstr ""
+
