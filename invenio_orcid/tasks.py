@@ -101,8 +101,8 @@ def delete_from_orcid(sender, api=None):
 def doc_type_should_be_sent_to_orcid(record):
     """Return ``True`` is a document type should be sent to ORCID."""
     index, doc_type = schema_to_index(record['$schema'])
-    main_doc_type = current_app.config['ORCID_RECORDS_DOC_TYPE']
-    return doc_type == main_doc_type
+    pushable_doc_types = current_app.config['ORCID_RECORDS_DOC_TYPES']
+    return doc_type in pushable_doc_types
 
 
 @shared_task(ignore_result=True)

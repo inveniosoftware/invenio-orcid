@@ -36,7 +36,7 @@ ORCID_ID_FETCHER = 'invenio_orcid.utils:get_orcid_id'
 ORCID_AUTHORS_SEARCH_CLASS = 'invenio_search:RecordsSearch'
 
 ORCID_RECORDS_PID_TYPE = 'records'
-ORCID_RECORDS_DOC_TYPE = 'records'
+ORCID_RECORDS_DOC_TYPES = {'records', }
 ORCID_RECORDS_PID_FETCHER = 'recid_fetcher'
 
 ORCID_WORK_TYPES = {}
