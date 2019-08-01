@@ -23,7 +23,7 @@ blueprint = Blueprint(
 
 @blueprint.route('/')
 def index():
-    """Basic view."""
+    """Return a basic view."""
     return render_template(
         'invenio_orcid/index.html',
         module_name=_('Invenio-ORCID'))

@@ -29,11 +29,31 @@ extras_require = {
     'docs': [
         'Sphinx>=1.4.2',
     ],
+    # Elasticsearch version
+    'elasticsearch2': [
+        'elasticsearch>=2.0.0,<3.0.0',
+        'elasticsearch-dsl>=2.0.0,<3.0.0',
+    ],
+    'elasticsearch5': [
+        'elasticsearch>=5.0.0,<6.0.0',
+        'elasticsearch-dsl>=5.1.0,<6.0.0',
+    ],
+    'elasticsearch6': [
+        'elasticsearch>=6.0.0,<7.0.0',
+        'elasticsearch-dsl>=6.0.0,<6.2.0',
+    ],
+    'elasticsearch7': [
+        'elasticsearch>=7.0.0,<8.0.0',
+        'elasticsearch-dsl>=7.0.0,<8.0.0',
+    ],
     'tests': tests_require,
 }
 
 extras_require['all'] = []
-for reqs in extras_require.values():
+for name, reqs in extras_require.items():
+    if name in ('elasticsearch2', 'elasticsearch5',
+                'elasticsearch6', 'elasticsearch7'):
+        continue
     extras_require['all'].extend(reqs)
 
 setup_requires = [
@@ -47,6 +67,8 @@ install_requires = [
     'invenio-db>=1.0.0a9',
     'invenio-oauthclient>=1.0.0a4',
     'orcid>=0.7.0',
+    'invenio-records-rest>=1.0.0',
+    'invenio-search>=1.0.0'
 ]
 
 packages = find_packages()

@@ -9,9 +9,7 @@
 """Implement helper functions."""
 
 from flask import current_app
-
 from invenio_oauthclient.models import RemoteAccount, UserIdentity
-
 from werkzeug.utils import import_string
 
 
@@ -32,7 +30,7 @@ def get_authors_credentials(author, method='orcid'):
 
 
 def get_orcid_id(author):
-    """Return the ORCID iD of a given author record.
+    """Return the ORCID ID of a given author record.
 
     :param author: An author record.
     """
@@ -40,8 +38,9 @@ def get_orcid_id(author):
 
 
 def convert_to_orcid(record):
-    """Dummy converter, assuming that the record is a dojson serialization of MARC.
+    """Create orcid using a dummy converter.
 
+    The converter assumes that the record is a dojson serialization of MARC.
     To create yours see https://github.com/ORCID/python-orcid
     and http://members.orcid.org/api.
     """
